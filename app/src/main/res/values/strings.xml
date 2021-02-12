@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FoodS</string>
+    <string name="google_map_api_key">AIzaSyBoc6Ds1uXK0y7VVfPwTVW48omKooc3HGM</string>
+
 </resources>
