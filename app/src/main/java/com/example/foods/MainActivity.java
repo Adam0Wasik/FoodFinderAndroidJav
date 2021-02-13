@@ -27,7 +27,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SupportMapFragment supporMapFragment;
     private GoogleMap map;
+    private float radius;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLat = 0;
     private double currentLong = 0;
@@ -126,15 +130,18 @@ public class MainActivity extends AppCompatActivity {
         searchBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                float radius = distBar.getProgress();
+                radius = distBar.getProgress();
+                String keyword = String.valueOf(tagBox.getText());
+                radius = radius * 250;
                // String type = (String) tagBox.getText();
                 String currLat = Double.toString(currentLat);
                 String currLng = Double.toString(currentLong);
 
                 String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                         "location=" + currLat + "," + currLng +
-                        "&radius= 5000"  +
-
+                        "&radius="  + radius +
+                        "&type=restaurant"+
+                        "&keyword=" + keyword +
                         "&sensor=true" +
                         "&key=" + getResources().getString(R.string.google_map_api_key);
                 new PlaceTask().execute(url);
@@ -145,13 +152,6 @@ public class MainActivity extends AppCompatActivity {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         supporMapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
-
-        //place types
-        String[] placeTypeList = { "atm", "bank","hospital"};
-        String[] placeNameList = { "Atm", "Bank","Hospital"};
-
-        //FusedLocationProvider Client
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         //check permissions
@@ -179,11 +179,26 @@ public class MainActivity extends AppCompatActivity {
                     supporMapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
-                            Toast.makeText(MainActivity.this, "map zoomed", Toast.LENGTH_SHORT).show();
                             map = googleMap;
                             map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                   new LatLng(currentLat,currentLong),10
                             ));
+                            LatLng latLng = new LatLng(currentLat,currentLong);
+                            MarkerOptions options = new MarkerOptions();
+                            options.position(latLng);
+                            options.title("me");
+
+                            map.addMarker(options);
+                            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+
+                                    //Using position get Value from arraylist
+                                    Toast.makeText(MainActivity.this, "click", Toast.LENGTH_SHORT).show();
+                                    return false;
+                                }
+                            });
+
                         }
                     });
                 }
@@ -227,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
             String data = null;
             try {
                  data = downloadUrl(strings[0]);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -236,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             new PareserTask().execute(s);
+            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -283,8 +300,16 @@ public class MainActivity extends AppCompatActivity {
                  MarkerOptions options = new MarkerOptions();
                  options.position(latLng);
                  options.title(name);
+
                  map.addMarker(options);
-                 Toast.makeText(MainActivity.this, "map  updt", Toast.LENGTH_SHORT).show();
+                 MarkerOptions me = new MarkerOptions();
+                 me.position(new LatLng(currentLat, currentLong));
+                 me.title("me");
+                 map.addMarker(me);
+                 CircleOptions circleOptions = new CircleOptions()
+                         .center(new LatLng(currentLat, currentLong))
+                         .radius(radius);
+                 Circle circle = map.addCircle(circleOptions);
              }
         }
     }
