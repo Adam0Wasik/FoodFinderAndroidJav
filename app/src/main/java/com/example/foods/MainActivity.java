@@ -312,8 +312,8 @@ public class MainActivity extends AppCompatActivity {
                          Intent pop = new Intent(MainActivity.this, Pop.class);
                          LatLng ltng = marker.getPosition();
                          String temp = ltng.toString();
-                         temp.replace("(","");
-                         temp.replace(")","");
+                         temp =  temp.replace("lat/lng: (","");
+                         temp = temp.replace(")","");
                          String[] T = temp.split(",");
 
 
