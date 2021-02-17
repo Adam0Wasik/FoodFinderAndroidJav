@@ -29,15 +29,12 @@ public class FavouritesActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Favourites");
 
-
-
-
         list = (ListView) findViewById(R.id.listView1);
 
-        String cars[] = {"Mercedes", "Fiat", "Ferrari", "Aston Martin", "Lamborghini", "Skoda", "Volkswagen", "Audi", "Citroen", "Mercedes", "Fiat", "Ferrari", "Aston Martin", "Lamborghini", "Skoda", "Volkswagen", "Audi"};
+        String names[] = {};
 
         ArrayList<String> carL = new ArrayList<String>();
-        carL.addAll( Arrays.asList(cars) );
+        carL.addAll( Arrays.asList(names) );
 
         adapter = new ArrayAdapter<String>(this, R.layout.single_row, carL);
 

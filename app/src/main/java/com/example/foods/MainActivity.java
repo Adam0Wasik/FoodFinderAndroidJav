@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -187,17 +188,9 @@ public class MainActivity extends AppCompatActivity {
                             MarkerOptions options = new MarkerOptions();
                             options.position(latLng);
                             options.title("me");
+                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
                             map.addMarker(options);
-                            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-
-                                    //Using position get Value from arraylist
-                                    Toast.makeText(MainActivity.this, "click", Toast.LENGTH_SHORT).show();
-                                    return false;
-                                }
-                            });
 
                         }
                     });
@@ -252,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             new PareserTask().execute(s);
-            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -304,13 +297,34 @@ public class MainActivity extends AppCompatActivity {
                  map.addMarker(options);
                  MarkerOptions me = new MarkerOptions();
                  me.position(new LatLng(currentLat, currentLong));
-                 me.title("me");
+                 me.title("You are here");
+                 me.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                  map.addMarker(me);
                  CircleOptions circleOptions = new CircleOptions()
                          .center(new LatLng(currentLat, currentLong))
                          .radius(radius);
                  Circle circle = map.addCircle(circleOptions);
+                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                     @Override
+                     public boolean onMarkerClick(Marker marker) {
+                         Intent pop = new Intent(MainActivity.this, Pop.class);
+                         LatLng ltng = marker.getPosition();
+                         String temp = ltng.toString();
+                         temp.replace("(","");
+                         temp.replace(")","");
+                         String[] T = temp.split(",");
+
+
+                         pop.putExtra("lat", T[0]);
+                         pop.putExtra("lng", T[1]);
+                         pop.putExtra("name", marker.getTitle());
+
+                         startActivity(pop);
+                         return false;
+                     }
+                 });
              }
+
         }
     }
 }
