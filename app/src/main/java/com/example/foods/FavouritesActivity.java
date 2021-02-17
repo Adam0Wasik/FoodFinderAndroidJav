@@ -39,6 +39,5 @@ public class FavouritesActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, R.layout.single_row, carL);
 
         list.setAdapter(adapter);
-
     }
 }

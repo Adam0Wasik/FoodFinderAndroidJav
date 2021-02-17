@@ -9,6 +9,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -65,9 +66,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.mToolBar);
+        TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        mTitle.setText("Search food");
+        mTitle.setTypeface(null, Typeface.BOLD);
 
-        toolbar.setTitle("Search food");
         toolbar.setNavigationIcon(R.drawable.ic_star_white_24dp);
+        toolbar.setTitle("");// override appname
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,9 +193,7 @@ public class MainActivity extends AppCompatActivity {
                             options.position(latLng);
                             options.title("me");
                             options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-
                             map.addMarker(options);
-
                         }
                     });
                 }
