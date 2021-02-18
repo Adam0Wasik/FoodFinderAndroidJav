@@ -4,7 +4,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
 public class FavouritesActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
@@ -30,7 +35,7 @@ public class FavouritesActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter ;
     private DatabaseReference dbRef;
     private FirebaseDatabase database;
-    private  String cuid;
+    private String cuid;
     private List<LocationFav> locations;
     private ArrayList<String> names ;
     @Override
@@ -86,6 +91,17 @@ public class FavouritesActivity extends AppCompatActivity {
             }
         });
 
-
+        list.setClickable(true);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                Intent intent = new Intent(FavouritesActivity.this, PopFav.class);
+                String name = names.get(position);
+                intent.putExtra("name", name);
+                startActivity(intent);
+            }
+        });
     }
+
 }

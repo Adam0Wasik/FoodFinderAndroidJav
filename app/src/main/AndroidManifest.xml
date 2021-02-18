@@ -41,7 +41,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Pop"
+        android:name=".PopAdd"
+        android:theme="@style/AppTheme.customTheme" />
+        <activity
+            android:name=".PopFav"
             android:theme="@style/AppTheme.customTheme" />
     </application>
 

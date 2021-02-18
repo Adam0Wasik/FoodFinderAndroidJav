@@ -6,7 +6,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,7 +34,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -309,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
                  map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                      @Override
                      public boolean onMarkerClick(Marker marker) {
-                         Intent pop = new Intent(MainActivity.this, Pop.class);
+                         Intent pop = new Intent(MainActivity.this, PopAdd.class);
                          LatLng ltng = marker.getPosition();
                          String temp = ltng.toString();
                          temp =  temp.replace("lat/lng: (","");
