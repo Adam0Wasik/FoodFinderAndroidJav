@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,6 +35,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,12 +63,20 @@ public class MainActivity extends AppCompatActivity {
     private GoogleMap map;
     private float radius;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private double currentLat = 0;
-    private double currentLong = 0;
+    private double currentLat;
+    private double currentLong;
+    private DatabaseReference dbRef;
+    private FirebaseDatabase database;
+    private String cuid;
+    private double latt, lngg;
+    private Location location2;
+    private double cLat, cLng;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        cuid = user.getUid();
 
         toolbar = findViewById(R.id.mToolBar);
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
@@ -124,6 +140,17 @@ public class MainActivity extends AppCompatActivity {
               priceBar.setProgress(0);
               distBar.setProgress(0);
               tagBox.setText("");
+              map.clear();
+              currentLat = location2.getLatitude();
+              currentLong = location2.getLongitude();
+              map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(currentLat,currentLong),15
+                ));
+              MarkerOptions options = new MarkerOptions();
+              options.position(new LatLng(currentLat,currentLong));
+              options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+              map.addMarker(options);
+
             }
         });
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             //Request Permission
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-
+        database = FirebaseDatabase.getInstance();
 }
 
     private void getCurrentLocation() {
@@ -174,23 +201,83 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Location location) {
                //when succes
-
-                if (location != null){
-                    currentLat = location.getLatitude();
-                    currentLong = location.getLongitude();
+                 location2 = location;
+                if (location2 != null){
                     supporMapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
-                        public void onMapReady(GoogleMap googleMap) {
-                            map = googleMap;
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                  new LatLng(currentLat,currentLong),10
-                            ));
-                            LatLng latLng = new LatLng(currentLat,currentLong);
-                            MarkerOptions options = new MarkerOptions();
-                            options.position(latLng);
-                            options.title("me");
-                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                            map.addMarker(options);
+                        public void onMapReady(final GoogleMap googleMap) {
+
+                            if(getIntent().hasExtra("name")) {
+                                dbRef = database.getReference("data");
+                                dbRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                                        {
+                                            String uid =  snapshot.child("uid").getValue().toString();
+                                            if(uid.equals(cuid))
+                                            {
+                                                if(getIntent().getStringExtra("name").equals(snapshot.child("name").getValue().toString()))
+                                                {
+                                                    cLat = Double.parseDouble(snapshot.child("lat").getValue().toString());
+                                                    cLng = Double.parseDouble(snapshot.child("lng").getValue().toString());
+                                                    map = googleMap;
+
+                                                    LatLng latLng = new LatLng(currentLat,currentLong);
+                                                    if(getIntent().hasExtra("name"))
+                                                        latLng = new LatLng(cLat,cLng);
+
+                                                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                                            latLng,15
+                                                    ));
+                                                    MarkerOptions options = new MarkerOptions();
+                                                    options.position(latLng);
+                                                    if(getIntent().hasExtra("name"))
+                                                    {
+                                                        options.title(getIntent().getStringExtra("name"));
+                                                    }
+                                                    else{
+                                                        options.title("me");
+                                                    }
+
+                                                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                                    map.addMarker(options);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                currentLat = location2.getLatitude();
+                                currentLong = location2.getLongitude();
+                                map = googleMap;
+
+                                LatLng latLng = new LatLng(currentLat,currentLong);
+                                if(getIntent().hasExtra("name"))
+                                    latLng = new LatLng(cLat,cLng);
+
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                        latLng,15
+                                ));
+                                MarkerOptions options = new MarkerOptions();
+                                options.position(latLng);
+                                if(getIntent().hasExtra("name"))
+                                {
+                                    options.title(getIntent().getStringExtra("name"));
+                                }
+                                else{
+                                    options.title("me");
+                                }
+
+                                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                map.addMarker(options);
+                            }
+
                         }
                     });
                 }

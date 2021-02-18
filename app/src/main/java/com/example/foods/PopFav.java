@@ -1,6 +1,7 @@
 package com.example.foods;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +31,7 @@ public class PopFav extends Activity {
     private DatabaseReference dbRef;
     private FirebaseDatabase database;
     private String cuid, name;
+    private double lat, lng;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +54,23 @@ public class PopFav extends Activity {
         nameTV.setTypeface(null, Typeface.BOLD);
 
         Button deleteButton = (Button) findViewById(R.id.delBtn);
+        Button gotoButton = (Button) findViewById(R.id.goToBtn);
+
         database = FirebaseDatabase.getInstance();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         cuid = user.getUid();
+
+        gotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PopFav.this, MainActivity.class);
+                name = getIntent().getStringExtra("name");
+                intent.putExtra("name", name);
+                startActivity(intent);
+            }
+        });
+
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +79,6 @@ public class PopFav extends Activity {
                 dbRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
                         for(DataSnapshot snapshot : dataSnapshot.getChildren())
                         {
                             String uid =  snapshot.child("uid").getValue().toString();
@@ -73,22 +88,13 @@ public class PopFav extends Activity {
                                 {
                                 snapshot.getRef().removeValue();
                                 }
-
                             }
                         }
-
                     }
-
                     @Override
                     public void onCancelled(DatabaseError error) {
                     }
                 });
-//                String name = getIntent().getStringExtra("name");
-//
-//
-//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                String uid = user.getUid();
-//                dbRef.child(String.valueOf((maxid+1))).child("uid").setValue(uid);
             }
         });
     }

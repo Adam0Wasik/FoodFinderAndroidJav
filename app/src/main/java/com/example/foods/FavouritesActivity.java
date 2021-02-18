@@ -37,7 +37,11 @@ public class FavouritesActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private String cuid;
     private List<LocationFav> locations;
-    private ArrayList<String> names ;
+    private ArrayList<String> names;
+    private String name;
+    private double lat;
+    private double lng;
+    private int position2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +71,6 @@ public class FavouritesActivity extends AppCompatActivity {
                 names.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
-
                     String uid =  snapshot.child("uid").getValue().toString();
                     if(uid.equals(cuid))
                     {
@@ -83,7 +86,6 @@ public class FavouritesActivity extends AppCompatActivity {
                         new HashSet<>(names));
                 adapter = new ArrayAdapter<String>(FavouritesActivity.this, R.layout.single_row, listWithoutDuplicates);
                 list.setAdapter(adapter);
-
             }
 
             @Override
@@ -99,6 +101,31 @@ public class FavouritesActivity extends AppCompatActivity {
                 Intent intent = new Intent(FavouritesActivity.this, PopFav.class);
                 String name = names.get(position);
                 intent.putExtra("name", name);
+                position2 = position;
+                dbRef = database.getReference("data");
+                dbRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                        {
+                            String uid =  snapshot.child("uid").getValue().toString();
+                            if(uid.equals(cuid))
+                            {
+                                if(names.get(position2).equals(snapshot.child("name").getValue().toString()))
+                                {
+                                    lat = Double.parseDouble(snapshot.child("lat").getValue().toString());
+                                    lng = Double.parseDouble(snapshot.child("lng").getValue().toString());
+
+                                }
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                    }
+                });
+                intent.putExtra("lat",lat);
+                intent.putExtra("lng",lng);
                 startActivity(intent);
             }
         });

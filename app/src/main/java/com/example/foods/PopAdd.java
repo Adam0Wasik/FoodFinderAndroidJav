@@ -52,7 +52,6 @@ public class PopAdd extends Activity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     maxid= (int) snapshot.getChildrenCount();
-                    Toast.makeText(PopAdd.this, "", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -62,8 +61,6 @@ public class PopAdd extends Activity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 String name = getIntent().getStringExtra("name");
                 dbRef.child(String.valueOf((maxid+1))).child("name").setValue(name);
 
