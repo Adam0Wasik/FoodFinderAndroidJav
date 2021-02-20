@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -143,13 +142,7 @@ public class MainActivity extends AppCompatActivity {
               map.clear();
               currentLat = location2.getLatitude();
               currentLong = location2.getLongitude();
-              map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(currentLat,currentLong),15
-                ));
-              MarkerOptions options = new MarkerOptions();
-              options.position(new LatLng(currentLat,currentLong));
-              options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-              map.addMarker(options);
+              locateAndZoom("You are here", currentLat, currentLong, 15);
 
             }
         });
@@ -222,26 +215,7 @@ public class MainActivity extends AppCompatActivity {
                                                     cLat = Double.parseDouble(snapshot.child("lat").getValue().toString());
                                                     cLng = Double.parseDouble(snapshot.child("lng").getValue().toString());
                                                     map = googleMap;
-
-                                                    LatLng latLng = new LatLng(currentLat,currentLong);
-                                                    if(getIntent().hasExtra("name"))
-                                                        latLng = new LatLng(cLat,cLng);
-
-                                                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                                            latLng,15
-                                                    ));
-                                                    MarkerOptions options = new MarkerOptions();
-                                                    options.position(latLng);
-                                                    if(getIntent().hasExtra("name"))
-                                                    {
-                                                        options.title(getIntent().getStringExtra("name"));
-                                                    }
-                                                    else{
-                                                        options.title("me");
-                                                    }
-
-                                                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                                    map.addMarker(options);
+                                                    locateAndZoom(getIntent().getStringExtra("name"),cLat,cLng,15);
                                                 }
                                             }
                                         }
@@ -256,28 +230,8 @@ public class MainActivity extends AppCompatActivity {
                                 currentLat = location2.getLatitude();
                                 currentLong = location2.getLongitude();
                                 map = googleMap;
-
-                                LatLng latLng = new LatLng(currentLat,currentLong);
-                                if(getIntent().hasExtra("name"))
-                                    latLng = new LatLng(cLat,cLng);
-
-                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                        latLng,15
-                                ));
-                                MarkerOptions options = new MarkerOptions();
-                                options.position(latLng);
-                                if(getIntent().hasExtra("name"))
-                                {
-                                    options.title(getIntent().getStringExtra("name"));
-                                }
-                                else{
-                                    options.title("me");
-                                }
-
-                                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                map.addMarker(options);
+                                locateAndZoom("You are here", currentLat,currentLong,15);
                             }
-
                         }
                     });
                 }
@@ -314,7 +268,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    public void locateAndZoom(String name, double lat, double lng, int zoomLvl){
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(lat,lng),zoomLvl
+        ));
+        MarkerOptions options = new MarkerOptions();
+        options.position(new LatLng(lat,lng));
+        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        options.title(name);
+        map.addMarker(options);
+    }
     private class PlaceTask extends AsyncTask<String,Integer,String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -331,7 +294,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             new PareserTask().execute(s);
-            //Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -390,6 +352,9 @@ public class MainActivity extends AppCompatActivity {
                          .center(new LatLng(currentLat, currentLong))
                          .radius(radius);
                  Circle circle = map.addCircle(circleOptions);
+                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                         circleOptions.getCenter(),getZoomLevel(circle)
+                 ));
                  map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                      @Override
                      public boolean onMarkerClick(Marker marker) {
@@ -412,5 +377,14 @@ public class MainActivity extends AppCompatActivity {
              }
 
         }
+    }
+    public int getZoomLevel(Circle circle) {
+        int zoomLevel = 11;
+        if (circle != null) {
+            double radius = circle.getRadius() + circle.getRadius() / 2;
+            double scale = radius / 500;
+            zoomLevel = (int) (16 - Math.log(scale) / Math.log(2));
+        }
+        return zoomLevel;
     }
 }
