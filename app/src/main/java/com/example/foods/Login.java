@@ -34,7 +34,7 @@ private EditText emailET, passwordET;
 
     toolbar = findViewById(R.id.mToolBar);
     TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-        mTitle.setText("Login");
+        mTitle.setText(R.string.login);
         mTitle.setTypeface(null, Typeface.BOLD);
 
     registerButton = findViewById(R.id.registerButton);

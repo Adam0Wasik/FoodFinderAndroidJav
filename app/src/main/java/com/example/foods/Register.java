@@ -34,7 +34,7 @@ public class Register extends AppCompatActivity {
 
         toolbar = findViewById(R.id.mToolBar);
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-        mTitle.setText("Register");
+        mTitle.setText(R.string.Register);
         mTitle.setTypeface(null, Typeface.BOLD);
 
         registerButton = findViewById(R.id.registerButton);

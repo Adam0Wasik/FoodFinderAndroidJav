@@ -55,7 +55,7 @@ public class FavouritesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-        mTitle.setText("Favourites");
+        mTitle.setText(R.string.favourites);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("");

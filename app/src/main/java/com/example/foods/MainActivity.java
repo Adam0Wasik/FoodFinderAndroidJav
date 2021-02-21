@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.mToolBar);
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-        mTitle.setText("Search food");
+        mTitle.setText(R.string.searchlabel);
         mTitle.setTypeface(null, Typeface.BOLD);
 
         toolbar.setNavigationIcon(R.drawable.ic_star_white_24dp);
@@ -155,7 +156,8 @@ public class MainActivity extends AppCompatActivity {
                 radius = distBar.getProgress();
                 String keyword = String.valueOf(tagBox.getText());
                 radius = radius * 250;
-               // String type = (String) tagBox.getText();
+                int price=priceBar.getProgress();
+                price *= 2;
                 String currLat = Double.toString(currentLat);
                 String currLng = Double.toString(currentLong);
 
@@ -164,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         "&radius="  + radius +
                         "&type=restaurant"+
                         "&keyword=" + keyword +
+                        "&maxprice=" + price +
                         "&sensor=true" +
                         "&key=" + getResources().getString(R.string.google_map_api_key);
                 new PlaceTask().execute(url);
