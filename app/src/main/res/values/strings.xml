@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">FoodS</string>
+    <string name="favourites">favourites</string>
+    <string name="login">login</string>
+    <string name="passwordTitle">password:</string>
+    <string name="RegisterButton">register</string>
+    <string name="LoginButton">login</string>
+    <string name="Register">register</string>
+    <string name="add">add</string>
+    <string name="addtofav">Add to favourites?</string>
+    <string name="Goto">Go to</string>
+    <string name="delete">delete</string>
+    <string name="units">Units:</string>
+    <string name="Lang">Language:</string>
+    <string name="Theme">Theme:</string>
+    <string name="Logout">Logout</string>
+    <string name="settings">settings</string>
+    <string name="search">search</string>
+    <string name="clear">clear</string>
+    <string name="price">Price</string>
+    <string name="distance">Distance</string>
+    <string name="tags">Enter tags</string>
+    <string name="searchlabel">Search food</string>
+    <string name="imperial">imperial</string>
+    <string name="metric">metric</string>
+    <string name="save">save</string>
+
+
+    <string name="google_map_api_key">AIzaSyCDc8Pcg77vBnZQO_fo7lHOpZE9Z9vedw0</string>
 </resources>
